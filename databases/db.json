@@ -1,0 +1,101 @@
+{
+  "users": [
+    {
+      "id": 1,
+      "name": "sayali",
+      "password": "password"
+    },
+    {
+      "id": 2,
+      "name": "sarah",
+      "password": "password"
+    },
+    {
+      "id": 3,
+      "name": "ketul",
+      "password": "password"
+    },
+    {
+      "id": 4,
+      "name": "joe",
+      "password": "password"
+    },
+    {
+      "id": 5,
+      "name": "david",
+      "password": "password"
+    }
+  ],
+  "counts": [
+    {
+      "posts": 3,
+      "users": 5,
+      "groups": 4
+    }
+  ],
+  "posts": [
+    {
+      "content": "Vivek",
+      "user": "Ketul",
+      "date": "12/21/1991",
+      "approved": false,
+      "like": [
+        "Ketul"
+      ],
+      "dislike": [
+        "PK"
+      ],
+      "id": 1
+    },
+    {
+      "content": "Rohan",
+      "user": "Ketul",
+      "date": "12/21/1991",
+      "approved": false,
+      "like": [
+        "Ketul"
+      ],
+      "id": 6
+    },
+    {
+      "content": "joe",
+      "user": "Ketul",
+      "date": "12/21/1991",
+      "approved": false,
+      "like": [
+        "Ketul"
+      ],
+      "id": 7
+    },
+    {
+      "content": "joe",
+      "user": "Ketul",
+      "date": "12/21/1991",
+      "approved": false,
+      "like": [
+        "Ketul"
+      ],
+      "id": 8
+    }
+  ],
+  "votes": [
+    {
+      "id": 1,
+      "post": 12,
+      "user": 1,
+      "like": 1
+    },
+    {
+      "id": 2,
+      "post": 13,
+      "user": 1,
+      "like": -1
+    },
+    {
+      "user": "demo",
+      "post": 20,
+      "vote": 1,
+      "id": 3
+    }
+  ]
+}
