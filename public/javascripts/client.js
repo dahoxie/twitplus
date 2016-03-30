@@ -271,8 +271,9 @@ $("#loginModal").delegate("#login",'click', function (event) {
 
             },
             error: function(data){
-                console.log("error: "+data);
                 $(".alert").removeClass("hide");
+                console.log("error: "+data);
+
             }
         });
     }
