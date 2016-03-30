@@ -4,43 +4,75 @@
 
 /* Create a new Tweet*/
 
+var loginuser;
+var loginname;
+
 $("#tweetPost").submit(function(event){
 
     event.preventDefault();             /**Ketul**/
 
     var tweet=$("#tweet").val();
-    var data={"tweet":tweet};
+    var data={"tweet":tweet,
+    "username":loginname,
+    "userid":loginuser};
 
     $.ajax({
-        url: "http://localhost:9000/tweet",
+        url: "http://localhost:8000/tweet",
         type: "POST",
         data: data,
         dataType:"json",
         success: function (postData) {
+
+            $("#tweet").val("");
             var likearr=postData.like;
             upcount=likearr.length;
+
+            var dislikearr=postData.dislike;
+            dcount=dislikearr.length;
+
+
             displayName(postData.id,postData.content,postData.user,postData.date,upcount,0,"up");
         }
     });
 });
 
 /*load all tweets*/
-$(document).ready(function()
+function loadTweets()
 {
     $.ajax({
-        url: "http://localhost:9000/loadTweets",     /*Ketul*/
+        url: "http://localhost:8000/loadTweets",     /*Ketul*/
         type: "GET",
         dataType:"json",
         success: function (postData) {
 
+            loginuser+="";
             postData.forEach(function(postData) {
                 var likearr=postData.like;
                 upcount=likearr.length;
-                displayName(postData.id,postData.content,postData.user,postData.date,upcount,0,"up");
+
+                var dislikearr=postData.dislike;
+                dcount=dislikearr.length;
+
+                if(likearr.indexOf(loginuser)!==-1)
+                {
+                    console.log("up");
+                    var updown="up";
+                }
+                else if(dislikearr.indexOf(loginuser)!==-1)
+                {
+                    console.log("down");
+                    var updown="down";
+                }
+                else
+                {
+                    console.log("no. Loginuser: "+loginuser+" Array up: "+likearr+" array down: "+dislikearr);
+                    var updown="no";
+                }
+                displayName(postData.id,postData.content,postData.user,postData.date,upcount,dcount,updown);
             });
         }
     });
-});
+}
 
 function displayName(id, tweet, user, date, up, down, upNoDown){
 
@@ -77,7 +109,6 @@ function displayName(id, tweet, user, date, up, down, upNoDown){
     $("#posts").prepend(post);
 }
 
-
 $("#posts").delegate("label", "click",function(e) {
 
     var target = $(e.target);
@@ -95,52 +126,282 @@ $("#posts").delegate("label", "click",function(e) {
         var down=0;
         var likearr=[];
         var dislikearr=[];
+
         $.ajax({
-            url: "http://localhost:9000/getVotes?id="+id,
+            url: "http://localhost:8000/getVotes?id="+id,
             type: "GET",
             dataType:"json",
             success: function (postData) {
 
                 likearr=postData.like;
-                up=likearr.length;
+
                 dislikearr=postData.dislike;
-                down=dislikearr.length;
+
+                var usern="";
+                usern+=loginuser;
+
 
                 if(target.hasClass("up")) {
 
-                    if(dislikearr.indexOf("Ketul")!==-1)
+                    if(dislikearr.indexOf(usern)!==-1)
                     {
-                        dislikearr.splice(dislikearr.indexOf("Ketul"), 1);
+                        dislikearr.splice(dislikearr.indexOf(usern), 1);
                     }
-                    likearr.push("demo");
+                    likearr.push(usern);
+
+                    up=likearr.length;
+                    down=dislikearr.length;
+
+                    $div.find("span.upvotes").text(up);
+                    $div.find("span.downvotes").text(down);
+
+                    postData.like=likearr;
+                    postData.dislike=dislikearr;
+
+                    updatePost(postData);
 
                 }
                 else if(target.hasClass("down")){
 
-                    if(likearr.indexOf("Ketul")!==-1)
+                    var usern="";
+                    usern+=loginuser;
+
+                    if(likearr.indexOf(usern)!==-1)
                     {
-                        likearr.splice(dislikearr.indexOf("Ketul"), 1);
+                        likearr.splice(likearr.indexOf(usern), 1);
                     }
-                    dislikearr.push("demo");
+                    dislikearr.push(usern);
+
+                    up=likearr.length;
+                    down=dislikearr.length;
+
+                    $div.find("span.upvotes").text(up);
+                    $div.find("span.downvotes").text(down);
+
+                    postData.like=likearr;
+                    postData.dislike=dislikearr;
+
+                    updatePost(postData);
+
                 }
-
-                alert(likearr+"-"+dislikearr);
-
             }
         });
+function updatePost(data)
+{
+   $.ajax({
+        url: "http://localhost:8000/updatePost",
+        type: "POST",
+        contentType: "application/json",
+        data:JSON.stringify(data),
+        dataType: "json",
+        success: function (updatedData) {
+            var count=(updatedData.like).length;
+            if(count===3)
+            {
+                postTweet(updatedData.content);
 
-
-
-
-
-
-            
-
-
-
+            }
         }
+    });
+}
+    }
+});
+
+function postTweet(tweet)
+{
+    var data={"tweet":tweet};
+    console.log("Inside postTweet client.js Tweet:"+tweet);
+
+    $.ajax({
+        url: "http://localhost:8000/postTwitter",
+        type: "POST",
+        contentType: "application/json",
+        data:JSON.stringify(data),
+        dataType: "json",
+        success: function (updatedData) {
+            $div.html("<div class=\"alert alert-success alert-dismissible\" role=\"alert\"> " +
+             "<button type=\"button\" class=\"close\" data-dismiss=\"alert\" aria-label=\"Close\">" +
+             "<span aria-hidden=\"true\">&times;</span></button> <strong>Great!</strong> " +
+             "Tweet posted to your account. </div>");
+        }
+    });
+}
+
+$("#loginModal").delegate("#login",'click', function (event) {
+    event.preventDefault();
+    var username, passwrd;
+    if( !$("#user-name").val()) {
+        $(".divUser").addClass("has-error");
+        $("div.username").append("<span class=\"glyphicon glyphicon-remove form-control-feedback\"></span>");
+        $(".username").fadeIn(100).fadeOut(100).fadeIn(100).fadeOut(100).fadeIn(100);
+    }
+    else if(!$("#password").val()){
+        $(".divPass").addClass("has-error");
+        $("div.password").append("<span class=\"glyphicon glyphicon-remove form-control-feedback\"></span>");
+        $(".password").fadeIn(100).fadeOut(100).fadeIn(100).fadeOut(100).fadeIn(100);
+
+    }
+    else {
+        username = $("#user-name").val();
+        passwrd = $("#password").val();
+
+        var data = {
+            "user_name": username,
+            "password": passwrd
+        };
+        $.ajax({
+            url: "http://localhost:8000/login",
+            type: "POST",
+            data: JSON.stringify(data),
+            dataType:"json",
+            contentType: "application/json",
+            success: function(data){
+
+                $("#loginModal").modal("hide");
+                loginname=data.user_name;
+                loginuser=data.id;
+
+                $("a#user").text(loginname);
+                /*$("li.dropdown").removeClass("hide");*/
+                $(".firstTask").addClass("hide");
+                $(".loginDone").removeClass("hide");
+                $(".userArea").removeClass("hide");
+
+                loadTweets();
+
+            },
+            error: function(data){
+                console.log("error: "+data);
+                $(".alert").removeClass("hide");
+            }
+        });
+    }
+});
+
+$("#user-name, #newUserName").keypress(function(){
+    $(".divUser").removeClass("has-error");
+    $("span.glyphicon-remove").remove();
+    $(".alert").addClass("hide");
+
+});
+$("#password, #newUserPass").keypress(function(){
+    $(".divPass").removeClass("has-error");
+    $("span.glyphicon-remove").remove();
+    $(".alert").addClass("hide");
+});
+$("#cnfrmPass").keypress(function(){
+    $(".divcnfrmPass").removeClass("has-error");
+    $("span.glyphicon-remove").remove();
+    $(".alert").addClass("hide");
+});
+$('.modal').on('hidden.bs.modal', function(){
+    $(this).find('form')[0].reset();
+    $(this).find(".divUser").removeClass("has-error");
+    $(this).find(".divPass").removeClass("has-error");
+    $(this).find(".divcnfrmPass").removeClass("has-error");
+    $("span.glyphicon-remove").remove();
+    $(".alert").addClass("hide");
+});
+
+$("#newSignUp").on("click", function(event){
+
+    event.preventDefault();
+    var newUser, newPass, cnfrmPass;
+
+    newUser = $("#newUserName").val();
+    newPass = $("#newUserPass").val();
+    cnfrmPass = $("#cnfrmPass").val();
+
+    if(!newUser){
+        $(".divUser").addClass("has-error");
+        $("div.username").append("<span class=\"glyphicon glyphicon-remove form-control-feedback\"></span>");
+        $(".username").fadeIn(100).fadeOut(100).fadeIn(100).fadeOut(100).fadeIn(100);
+    }
+    else if(!newPass){
+        $(".divPass").addClass("has-error");
+        $("div.password").append("<span class=\"glyphicon glyphicon-remove form-control-feedback\"></span>");
+        $(".password").fadeIn(100).fadeOut(100).fadeIn(100).fadeOut(100).fadeIn(100);
+    }
+    else if(!cnfrmPass){
+        $(".divcnfrmPass").addClass("has-error");
+        $("div.cnfrmPass").append("<span class=\"glyphicon glyphicon-remove form-control-feedback\"></span>");
+        $(".cnfrmPass").fadeIn(100).fadeOut(100).fadeIn(100).fadeOut(100).fadeIn(100);
+    }
+    else if(newPass !== cnfrmPass){
+        $(".alert").removeClass("hide");
+    }
+    else{
+        console.log("Password confirmed.");
+        var data = {
+            "user_name": newUser,
+            "password": newPass
+        };
+        /*$.ajax({
+         url: "http://localhost:8000/register",
+         type: "POST",
+         data: data,
+         dataType:"json",
+         success: function (data) {
+         console.log("new user created. "+data.id);
+         $("#signupModal").modal("hide");
+         }
+         });*/
+    }
+
 });
 
 
+/*$("#login").on('click',function(event){
 
+    event.preventDefault();
+    var username, passwrd;
+    if( !$("#user-name").val() || !$("#password").val() ) {
+        $(".modal-body").append("<div class=\"alert alert-danger alert-dismissible\" role=\"alert\"> " +
+            "<button type=\"button\" class=\"close\" data-dismiss=\"alert\" aria-label=\"Close\">" +
+            "<span aria-hidden=\"true\">&times;</span></button> <strong>Alert</strong> " +
+            "Empty fields </div>");
+        $("#user-name").addClass("err");
+    }
+    else {
 
+        username = $("#user-name").val();
+        passwrd = $("#password").val();
+
+        var data = {
+            "user_name": username,
+            "password": passwrd
+        };
+        $.ajax({
+            url: "http://localhost:8000/login",
+            type: "POST",
+            data: JSON.stringify(data),
+            dataType:"json",
+            contentType: "application/json",
+            success: function(data){
+
+                $("#loginModal").modal("hide");
+                loginname=data.user_name;
+                loginuser=data.id;
+
+                $(".firstTask").addClass("hide");
+                $(".loginDone").removeClass("hide");
+                $(".userArea").removeClass("hide");
+
+                loadTweets();
+
+            },
+            error: function(data){
+                console.log("error: "+data);
+            }
+        });
+    }
+});*/
+
+$("#logout").on("click", function(){
+
+    $(".firstTask").removeClass("hide");
+    $(".loginDone").addClass("hide");
+    $(".userArea").addClass("hide");
+
+    location.reload();
+});
