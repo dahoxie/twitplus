@@ -17,17 +17,18 @@
 
     <!-- Custom CSS -->
     <link href="stylesheets/clean-blog.css" rel="stylesheet">
-
+    <link href="stylesheets/style.css" rel="stylesheet">
     <!-- Custom Fonts -->
     <link href="http://maxcdn.bootstrapcdn.com/font-awesome/4.1.0/css/font-awesome.min.css" rel="stylesheet" type="text/css">
     <link href='http://fonts.googleapis.com/css?family=Lora:400,700,400italic,700italic' rel='stylesheet' type='text/css'>
     <link href='http://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800' rel='stylesheet' type='text/css'>
-
+    <link href="stylesheets/bootstrap-tag-cloud.css" rel="stylesheet">
     <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
     <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
     <!--[if lt IE 9]>
         <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
         <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+
     <![endif]-->
 
 </head>
@@ -56,7 +57,7 @@
                     <li>
                         <a href="#" class="loginDone hide" id="user"></a>
                     </li>
-                    <!--<li class="dropdown hide"><a href="#" class="dropdown-toggle" data-toggle="dropdown">Groups<b class="caret"></b></a>
+                    <li class="dropdown hide"><a href="#" class="dropdown-toggle" data-toggle="dropdown">Groups<b class="caret"></b></a>
                         <ul class="dropdown-menu">
                             <li><a href="#" data-toggle="modal" data-target="#groupModal">Create Group</a></li>
                             <li><a href="#">Manage Groups</a></li>
@@ -69,7 +70,7 @@
                                 </ul>
                             </li>
                         </ul>
-                    </li>-->
+                    </li>
                     <li>
                         <a href="#" class="loginDone hide" id="logout">Logout</a>
                     </li>
@@ -109,24 +110,23 @@
                 </div>
                 <div class="modal-body">
                     <form>
-                        <div class="form-group divUser">
+                        <div class="form-group">
                             <label for="user-name" class="control-label">Username</label>
-                            <div class="input-group username">
+                            <div class="input-group">
                                 <span class="input-group-addon"><i class="fa fa-user fa-fw"></i></span>
                                 <input type="text" name="focus" id="user-name" class="form-control">
                             </div>
-
                         </div>
-                        <div class="form-group divPass">
+                        <div class="form-group">
                             <label for="password" class="control-label">Password</label>
-                            <div class="input-group password">
+                            <div class="input-group">
                                 <span class="input-group-addon"><i class="fa fa-key fa-fw"></i></span>
                                 <input type="password" id="password" class="form-control">
                             </div>
                         </div>
                     </form>
                     <div class="alert alert-danger hide" role="alert">
-                        Please enter valid credentials.
+                        <strong>Please check your credentials.</strong>
                     </div>
                 </div>
                 <div class="modal-footer">
@@ -146,30 +146,30 @@
                 </div>
                 <div class="modal-body">
                     <form data-toggle="validator" role="form">
-                        <div class="form-group divUser">
+                        <div class="form-group">
                             <label for="newUserName" class="control-label">Username</label>
-                            <div class="input-group username">
+                            <div class="input-group">
                                 <span class="input-group-addon"><i class="fa fa-user fa-fw"></i></span>
                                 <input type="text" class="form-control" id="newUserName" maxlength="15" required>
                             </div>
                         </div>
-                        <div class="form-group divPass">
+                        <div class="form-group">
                             <label for="newUserPass" class="control-label">Password</label>
-                            <div class="input-group password">
+                            <div class="input-group">
                                 <span class="input-group-addon"><i class="fa fa-key fa-fw"></i></span>
                                 <input type="password" id="newUserPass" class="form-control">
                             </div>
                         </div>
-                        <div class="form-group divcnfrmPass">
+                        <div class="form-group">
                             <label for="cnfrmPass" class="control-label">Confirm Password</label>
-                            <div class="input-group cnfrmPass">
+                            <div class="input-group">
                                 <span class="input-group-addon"><i class="fa fa-key fa-fw"></i></span>
                                 <input type="password" id="cnfrmPass" class="form-control">
                             </div>
                         </div>
                     </form>
-                    <div class="alert alert-danger hide" role="alert">
-                        Passwords do not match.
+                    <div class="alert alert-warning hide" role="alert">
+                        <strong>Passwords do not match.</strong>
                     </div>
                 </div>
                 <div class="modal-footer">
@@ -190,24 +190,25 @@
                 </div>
                 <div class="modal-body">
                     <form data-toggle="validator" role="form">
-                        <div class="form-group divGrp">
+                        <div class="form-group">
                             <label for="groupName" class="control-label">Group Name</label>
                             <div class="input-group group">
-                                <span class="input-group-addon"><i class="fa fa-user fa-fw"></i></span>
+                                <span class="input-group-addon"><i class="fa fa-users fa-lg"></i></span>
                                 <input type="text" class="form-control" id="groupName" maxlength="15" required>
                             </div>
                         </div>
-                        <div class="form-group divMmbr">
-                            <label for="member" class="control-label">Members</label>
-                            <div class="input-group memberInp">
-                                <span class="input-group-addon"><i class="fa fa-key fa-fw"></i></span>
-                                <input type="password" id="member" class="form-control">
+                        <div class="form-group divMembers" style="padding: 0;">
+                            <label for="grpmembers" class="control-label">Add Group Members</label>
+                            <div id="tag-info" class="input-append input-group members" style="padding: 0;">
+                                <input type="text" id="grpmembers" class="form-control">
+                                <button id="adduser" class="btn" type="button" style="padding: 0"><i class="fa fa-plus-square fa-lg" style="padding: 0px; margin: 0"></i></button>
                             </div>
+                            <ul id="tag-cloud"></ul>
                         </div>
-                        <div class="form-group divTwitter">
+                        <div class="form-group">
                             <label for="twitter" class="control-label">Twitter Screen Name</label>
-                            <div class="input-group twitterInp">
-                                <span class="input-group-addon"><i class="fa fa-key fa-fw"></i></span>
+                            <div class="input-group">
+                                <span class="input-group-addon"><i class="fa fa-twitter-square fa-lg"></i></span>
                                 <input type="password" id="twitter" class="form-control">
                             </div>
                         </div>
@@ -215,7 +216,7 @@
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-default btn-sm closeAlert" data-dismiss="modal">Cancel</button>
-                    <button type="button" class="btn btn-success btn-sm" id="createGrp" data-toggle="collapse" data-target="#groupclicked">Sign Up</button>
+                    <button type="button" class="btn btn-success btn-sm" id="createGrp" data-toggle="collapse" data-target="#groupclicked">Create</button>
                 </div>
             </div>
         </div>
@@ -224,21 +225,30 @@
     <div class="container hide userArea">
         <!--<div id="alert"></div>-->
         <div class="row">
-            <form id="tweetPost">
-
-            <div class="col-lg-6 col-lg-offset-2 col-md-7 col-md-offset-1 col-sm-8 col-xs-8">
-                <textarea name="tweet" value="" id="tweet" maxlength="140" placeholder="Type your tweet here..." id="userTweet"></textarea>
+            <div id="group" class="col-lg-8 col-md-8 col-sm-8 col-xs-8">
+                <div class="row">
+                    <form id="tweetPost" role="form" class="form-inline">
+                        <div class="col-lg-8 col-md-7 col-sm-9 col-xs-8">
+                            <textarea name="tweet" value="" id="tweet" maxlength="140" placeholder="Type your post here" id="userTweet"></textarea>
+                        </div>
+                        <div class="col-lg-2 col-md-3 col-sm-3 col-xs-4">
+                            <button type="submit" class="btn btn-success"><i class="fa fa-plus-square fa-lg" style="padding: 0px; margin: 0"></i></button>
+                        </div>
+                    </form>
+                </div>
+                <div class="row">
+                    <div class="col-lg-10 col-md-10 col-sm-12 col-xs-12" id="posts">
+                    </div>
+                </div>
             </div>
-            <div class="col-lg-2 col-lg-offset-0 col-md-2 col-md-offset-1 col-sm-1 col-sm-offset-2 col-xs-2 col-xs-offset-2" >
-                <button type="submit" class="btn btn-secondary">Submit</button>
+            <div id="twitterFrame" class="col-lg-4 col-md-4 col-sm-4 col-xs-4">
+                <a class="twitter-timeline" href="https://twitter.com/cpsc473" data-widget-id="712752743727771649">Tweets by @cpsc473</a>
+                <script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';
+                    if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+"://platform.twitter.com/widgets.js";
+                        fjs.parentNode.insertBefore(js,fjs);}}(document,"script","twitter-wjs");</script>
             </div>
-            </form>
         </div>
-        <div class="row">
-            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1" id="posts">
 
-            </div>
-        </div>
     </div>
 
     <!-- Footer -->
@@ -289,6 +299,7 @@
     <!-- Custom Theme JavaScript -->
     <script src="javascripts/clean-blog.js"></script>
     <script src="javascripts/client.js"></script>
+    <script src="javascripts/bootstrap-tag-cloud.js"></script>
 
 </body>
 

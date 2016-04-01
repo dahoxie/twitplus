@@ -1,17 +1,13 @@
-/**
- * Created by Ketul on 3/22/2016.
- */
-
-/* Create a new Tweet*/
-
 var loginuser;
 var loginname;
 
+/*Add user's new post*/
 $("#tweetPost").submit(function(event){
 
     event.preventDefault();             /**Ketul**/
 
     var tweet=$("#tweet").val();
+
     var data={"tweet":tweet,
     "username":loginname,
     "userid":loginuser};
@@ -29,7 +25,6 @@ $("#tweetPost").submit(function(event){
 
             var dislikearr=postData.dislike;
             dcount=dislikearr.length;
-
 
             displayName(postData.id,postData.content,postData.user,postData.date,upcount,0,"up");
         }
@@ -74,6 +69,7 @@ function loadTweets()
     });
 }
 
+/*Display posts with upvote, downvote*/
 function displayName(id, tweet, user, date, up, down, upNoDown){
 
     var label1, label2;
@@ -98,7 +94,7 @@ function displayName(id, tweet, user, date, up, down, upNoDown){
         label2 = labelDown;
     }
 
-    var post = "<div id=\""+(id)+"\" class=\"post-preview\"> <h2 class=\"post-title\">"+tweet+" </h2> <p class=\"post-meta\">" +
+    var post = "<div id=\""+(id)+"\" class=\"post-preview \"> <h2 class=\"post-title\">"+tweet+" </h2> <p class=\"post-meta\">" +
         "Posted by <span class=\"username\">"+user+"</span> on <span class=\"date\">"+date+"</span></p> <div class=\"btn-group btn-group-sm upDown\" " +
         "data-toggle=\"buttons\">"+label1+"<input type=\"radio\" class= \"up\" autocomplete=\"off\"> " +
         "<span class=\"glyphicon glyphicon-thumbs-up up\" aria-hidden=\"true\"></span><span class=\"up upvotes\">"+up+"</span>" +
@@ -107,8 +103,10 @@ function displayName(id, tweet, user, date, up, down, upNoDown){
 
     /*prepend to show the latest post on top*/
     $("#posts").prepend(post);
+
 }
 
+/*Display group posts*/
 $("#posts").delegate("label", "click",function(e) {
 
     var target = $(e.target);
@@ -181,6 +179,9 @@ $("#posts").delegate("label", "click",function(e) {
                     postData.like=likearr;
                     postData.dislike=dislikearr;
 
+                    if(up == 3){
+                        postData.approved = true;
+                    }
                     updatePost(postData);
 
                 }
@@ -207,6 +208,7 @@ function updatePost(data)
     }
 });
 
+/*Upload post to twitter*/
 function postTweet(tweet)
 {
     var data={"tweet":tweet};
@@ -227,18 +229,25 @@ function postTweet(tweet)
     });
 }
 
+/*Display field error*/
+function err(sel){
+    $pDiv = $(sel).parent();
+    $pDiv.append("<span class=\"glyphicon glyphicon-remove form-control-feedback\"></span>");
+    $pDiv.fadeIn(100).fadeOut(100).fadeIn(100).fadeOut(100).fadeIn(100);
+    $gpDiv = $pDiv.parent();
+    $gpDiv.addClass("has-error");
+
+}
+
+/*Handle login*/
 $("#loginModal").delegate("#login",'click', function (event) {
     event.preventDefault();
     var username, passwrd;
     if( !$("#user-name").val()) {
-        $(".divUser").addClass("has-error");
-        $("div.username").append("<span class=\"glyphicon glyphicon-remove form-control-feedback\"></span>");
-        $(".username").fadeIn(100).fadeOut(100).fadeIn(100).fadeOut(100).fadeIn(100);
+        err("#user-name");
     }
     else if(!$("#password").val()){
-        $(".divPass").addClass("has-error");
-        $("div.password").append("<span class=\"glyphicon glyphicon-remove form-control-feedback\"></span>");
-        $(".password").fadeIn(100).fadeOut(100).fadeIn(100).fadeOut(100).fadeIn(100);
+        err("#password");
 
     }
     else {
@@ -262,10 +271,12 @@ $("#loginModal").delegate("#login",'click', function (event) {
                 loginuser=data.id;
 
                 $("a#user").text(loginname);
-                /*$("li.dropdown").removeClass("hide");*/
+                $("li.dropdown").removeClass("hide");
                 $(".firstTask").addClass("hide");
                 $(".loginDone").removeClass("hide");
                 $(".userArea").removeClass("hide");
+
+                $("button[type=submit]").prop('disabled',true);
 
                 loadTweets();
 
@@ -279,31 +290,28 @@ $("#loginModal").delegate("#login",'click', function (event) {
     }
 });
 
-$("#user-name, #newUserName").keypress(function(){
-    $(".divUser").removeClass("has-error");
-    $("span.glyphicon-remove").remove();
-    $(".alert").addClass("hide");
+/*Disable and enable submit button by checking the textarea contents*/
+$('#tweet').keyup(function(){
+    $("button[type=submit]").prop('disabled', this.value == "" ? true : false);
+});
 
-});
-$("#password, #newUserPass").keypress(function(){
-    $(".divPass").removeClass("has-error");
+/*Remove field errors on keypress*/
+$("#user-name, #newUserName, #password, #newUserPass, #cnfrmPass, #twitter, #groupName, #grpmembers, #adduser").on("click keypress", function(){
+    $(this).parent().parent().removeClass("has-error");
     $("span.glyphicon-remove").remove();
     $(".alert").addClass("hide");
 });
-$("#cnfrmPass").keypress(function(){
-    $(".divcnfrmPass").removeClass("has-error");
-    $("span.glyphicon-remove").remove();
-    $(".alert").addClass("hide");
-});
+
+/*Clear modal on close*/
 $('.modal').on('hidden.bs.modal', function(){
     $(this).find('form')[0].reset();
-    $(this).find(".divUser").removeClass("has-error");
-    $(this).find(".divPass").removeClass("has-error");
-    $(this).find(".divcnfrmPass").removeClass("has-error");
+    $(this).find("div.has-error").removeClass("has-error");
     $("span.glyphicon-remove").remove();
     $(".alert").addClass("hide");
+    $("ul#tag-cloud").text("");
 });
 
+/*Handle new user sign-up*/
 $("#newSignUp").on("click", function(event){
 
     event.preventDefault();
@@ -314,22 +322,18 @@ $("#newSignUp").on("click", function(event){
     cnfrmPass = $("#cnfrmPass").val();
 
     if(!newUser){
-        $(".divUser").addClass("has-error");
-        $("div.username").append("<span class=\"glyphicon glyphicon-remove form-control-feedback\"></span>");
-        $(".username").fadeIn(100).fadeOut(100).fadeIn(100).fadeOut(100).fadeIn(100);
+        err("#newUserName");
     }
     else if(!newPass){
-        $(".divPass").addClass("has-error");
-        $("div.password").append("<span class=\"glyphicon glyphicon-remove form-control-feedback\"></span>");
-        $(".password").fadeIn(100).fadeOut(100).fadeIn(100).fadeOut(100).fadeIn(100);
+        err("#newUserPass");
     }
     else if(!cnfrmPass){
-        $(".divcnfrmPass").addClass("has-error");
-        $("div.cnfrmPass").append("<span class=\"glyphicon glyphicon-remove form-control-feedback\"></span>");
-        $(".cnfrmPass").fadeIn(100).fadeOut(100).fadeIn(100).fadeOut(100).fadeIn(100);
+        err("#cnfrmPass");
     }
     else if(newPass !== cnfrmPass){
         $(".alert").removeClass("hide");
+        err("#newUserPass");
+        err("#cnfrmPass");
     }
     else{
         console.log("Password confirmed.");
@@ -351,53 +355,29 @@ $("#newSignUp").on("click", function(event){
 
 });
 
-
-/*$("#login").on('click',function(event){
-
+/*Handle new group creation*/
+$("#createGrp").on("click", function(event){
     event.preventDefault();
-    var username, passwrd;
-    if( !$("#user-name").val() || !$("#password").val() ) {
-        $(".modal-body").append("<div class=\"alert alert-danger alert-dismissible\" role=\"alert\"> " +
-            "<button type=\"button\" class=\"close\" data-dismiss=\"alert\" aria-label=\"Close\">" +
-            "<span aria-hidden=\"true\">&times;</span></button> <strong>Alert</strong> " +
-            "Empty fields </div>");
-        $("#user-name").addClass("err");
+    var users = [], grpName, twitterAcnt;
+    $("li.tag-cloud").each(function() { users.push($(this).text()) });
+    grpName = $("#groupName").val();
+    twitterAcnt = $("#twitter").val();
+    if(!grpName){
+        err("#groupName");
+    }
+    else if(users.length==0){
+        $(".divMembers").addClass("has-error");
+        $(".members").fadeIn(100).fadeOut(100).fadeIn(100).fadeOut(100).fadeIn(100);
+    }
+    else if(!twitterAcnt){
+        err("#twitter");
     }
     else {
 
-        username = $("#user-name").val();
-        passwrd = $("#password").val();
-
-        var data = {
-            "user_name": username,
-            "password": passwrd
-        };
-        $.ajax({
-            url: "http://localhost:8000/login",
-            type: "POST",
-            data: JSON.stringify(data),
-            dataType:"json",
-            contentType: "application/json",
-            success: function(data){
-
-                $("#loginModal").modal("hide");
-                loginname=data.user_name;
-                loginuser=data.id;
-
-                $(".firstTask").addClass("hide");
-                $(".loginDone").removeClass("hide");
-                $(".userArea").removeClass("hide");
-
-                loadTweets();
-
-            },
-            error: function(data){
-                console.log("error: "+data);
-            }
-        });
     }
-});*/
+});
 
+/*Logout*/
 $("#logout").on("click", function(){
 
     $(".firstTask").removeClass("hide");

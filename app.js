@@ -78,7 +78,7 @@ app.get('/loadTweets', function(req, res) {
 
 
 app.get('/getVotes',function(req,res){
-    if(sess.userid){
+    /*if(sess.userid){*/
         var id=req.param("id");
 
         request('http://localhost:3000/posts/'+id, function (error, response, body) {
@@ -86,13 +86,13 @@ app.get('/getVotes',function(req,res){
                 res.send(JSON.parse(body));
             }
         })
-    }
+   /* }
     else {
         console.log("please login");
         res.render("public/index.html");
-    }
+    }*/
 
-})
+});
 
 app.post('/login',function(req,res){
 
@@ -132,7 +132,7 @@ app.post('/login',function(req,res){
   });
 
 app.post('/updatePost',function(req,res){
-    if(sess.userid){
+    /*if(sess.userid){*/
         var data=req.body;
 
         var id=data.id;
@@ -142,17 +142,17 @@ app.post('/updatePost',function(req,res){
             res.send(body);
 
         });
-    }
+   /* }
     else {
         console.log("please login");
         res.render("public/index.html");
-    }
+    }*/
 
 
 });
 
 app.post("/postTwitter",function(req,res){
-    if(sess.userid){
+    /*if(sess.userid){*/
         console.log("response: "+res.body);
         var tweet=req.body.tweet;
 
@@ -172,11 +172,11 @@ app.post("/postTwitter",function(req,res){
             console.log(response);  // Raw response object.
             return;
         });
-    }
+    /*}
     else {
         console.log("please login");
         res.render("public/index.html");
-    }
+    }*/
 
 
 });
