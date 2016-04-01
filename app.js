@@ -76,6 +76,20 @@ app.get('/loadTweets', function(req, res) {
 
 });
 
+app.post('/addGroup', funtion(req, res) {
+    var groupName = req.body.groupname;
+    var data = {
+        group_Name: groupName,
+        members: [],
+        chat: [],
+    };
+
+    request.post({url:'http://localhost:3000/groups', header:{'Content-Type': 'application/json'}, body: JSON.stringify(data)}, function(error, response, body) {
+        var body = JSON.parse(body);
+        res.send(body);
+    })
+});
+
 
 app.get('/getVotes',function(req,res){
     /*if(sess.userid){*/

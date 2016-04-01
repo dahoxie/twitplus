@@ -69,6 +69,28 @@ function loadTweets()
     });
 }
 
+/*Post new group to server*/
+$(".submitGroup").on("click", function(){
+    var groupName = $("#groupName").val().toString();
+    var data = {
+        "group_Name": groupName,
+        "members": [],
+        "chat": [],
+    };
+    $.ajax({
+        url: "http://localhost:8000/addGroup",
+        type: "POST",
+        data: data,
+        dataType:"json",
+        success: function(newData){
+            console.log("Group posted succesfully");
+        },
+        error: function(){
+            console.log("Error posting data");
+        }
+    });
+});
+
 /*Display posts with upvote, downvote*/
 function displayName(id, tweet, user, date, up, down, upNoDown){
 
